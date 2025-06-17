@@ -3,6 +3,27 @@
 class OmniAuth::Strategies::Oauth2Basic < ::OmniAuth::Strategies::OAuth2
   option :name, "oauth2_basic"
 
+  # 完全覆盖默认的授权参数
+  def authorize_params
+    params = {
+      'appid' => options.client_id,
+      'response_type' => 'code',
+      'redirect_uri' => callback_url
+    }
+    # 添加 state 参数
+    if options.provider_ignores_state
+      logger.debug("Provider ignores state")
+    else
+      params['state'] = state
+    end
+    params
+  end
+
+  # 覆盖默认的 state 参数生成方法
+  def state
+    @state ||= SecureRandom.hex(24)
+  end
+
   uid do
     if path = SiteSetting.oauth2_callback_user_id_path.split(".")
       recurse(access_token, [*path]) if path.present?
