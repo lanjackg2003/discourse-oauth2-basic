@@ -20,6 +20,7 @@ class OAuth2BasicAuthenticator < Auth::ManagedAuthenticator
                         lambda { |env|
                           opts = env["omniauth.strategy"].options
                           opts[:client_id] = SiteSetting.oauth2_client_id
+                          opts[:appid] = SiteSetting.oauth2_client_id
                           opts[:client_secret] = SiteSetting.oauth2_client_secret
                           opts[:provider_ignores_state] = SiteSetting.oauth2_disable_csrf
                           opts[:client_options] = {
